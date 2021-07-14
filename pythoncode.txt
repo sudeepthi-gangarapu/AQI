@@ -1,0 +1,38 @@
+#Importing libraries
+import tensorflow as tf
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder
+from sklearn.utils import shuffle
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+# Reading Dataset
+ds=pd.read_csv("/content/delhi.csv")
+X=ds.iloc[:, 0:-1].values
+y=ds.iloc[:,-1].values
+le = LabelEncoder()
+y  = le.fit_transform(y)
+print(y)
+#train and test the dataset
+x_train, x_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
+# feature scaling
+sc = StandardScaler()
+x_train = sc.fit_transform(x_train)
+x_test = sc.transform(x_test)
+#intialising ann
+ann = tf.keras.models.Sequential()
+# adding input layer
+ann.add(tf.keras.layers.Dense(units=6, activation='relu'))
+# second layer
+ann.add(tf.keras.layers.Dense(units=4, activation='relu'))
+# third layer
+ann.add(tf.keras.layers.Dense(units=3, activation='relu'))
+# ouput layer
+ann.add(tf.keras.layers.Dense(units=1, activation='sigmoid'))
+# compile the neural network
+ann.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+#training the ann
+ann.fit(x_train, y_train, batch_size = 32, epochs = 150)
+
+# testing the model 
+print(ann.predict(sc.transform([[130, 124, 32, 20, 11, 17, 28, 1004, 40,12]]))>0.5)
